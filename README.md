@@ -103,4 +103,4 @@ Black and Litterman (1992). He and Litterman (1999). Ledoit and Wolf (2004). DeM
 
 ## Author
 
-Benjamin Kristensen, MSc Applied Economics and Finance, Copenhagen Business School.
+High_Magus_of_Risk.
