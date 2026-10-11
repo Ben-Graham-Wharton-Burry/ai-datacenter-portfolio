@@ -1,0 +1,22 @@
+_backups/
+*.bak
+
+# Near-duplicate of AI_DataCenter_Thesis_Analysis.ipynb, differs by 29 characters
+AI_DataCenter_Thesis_Executed.ipynb
+
+# Source document, superseded by the PDF
+Portfolio Investment Thesis; AI Data Centers_S.docx
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+.ipynb_checkpoints/
+
+# Stale per-run caches. The committed snapshot is data_cache/prices_daily.csv
+data_cache/prices.csv
+
+.DS_Store
+Thumbs.db
+desktop.ini

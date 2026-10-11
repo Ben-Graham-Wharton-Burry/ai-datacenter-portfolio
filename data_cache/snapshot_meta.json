@@ -1,0 +1,33 @@
+{
+  "start": "2019-01-01",
+  "end": "2026-03-01",
+  "source": "Yahoo Finance via yfinance",
+  "adjustment": "auto_adjust=True (total return)",
+  "fetched_utc": "2026-10-11T17:18:09+00:00",
+  "rows": 1799,
+  "columns": [
+    "AMT",
+    "ANET",
+    "CAT",
+    "CCI",
+    "CSCO",
+    "DLR",
+    "DTCR",
+    "EQIX",
+    "ETN",
+    "GDS",
+    "GNRC",
+    "HON",
+    "IRM",
+    "IWD",
+    "IWF",
+    "IWM",
+    "JCI",
+    "MRVL",
+    "SBGSY",
+    "SPY",
+    "SRVR",
+    "VNET",
+    "VRT"
+  ]
+}
