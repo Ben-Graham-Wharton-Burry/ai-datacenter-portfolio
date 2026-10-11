@@ -1,4 +1,4 @@
-﻿# AI Data Centre Infrastructure Portfolio
+# AI Data Centre Infrastructure Portfolio
 
 Construction and out-of-sample validation of a thematic equity portfolio built around the physical infrastructure behind AI compute: the colocation REITs that house the racks, the firms that power and cool them, and the networking hardware that connects them.
 
@@ -28,7 +28,7 @@ Research and validation have different incentives, and running them in one file 
 
 Test period February 2023 to February 2026, net of 15 bps round-trip costs, universe selected on training data only.
 
-| | |
+| Measure | Result |
 |---|---|
 | Sharpe ratio | 1.30, bootstrap 95% CI [0.24, 2.74] |
 | Probabilistic Sharpe Ratio | 0.97 |
@@ -76,13 +76,13 @@ The Monte Carlo section carries its own warning. Fifteen-year projections built 
 AI_DataCenter_Thesis_Analysis.ipynb   Research: factors, optimisation, BL, Monte Carlo
 unified_analysis.ipynb                Validation: split, walk-forward, deflation
 src/
-â”œâ”€â”€ config.py          Parameters, centralised
-â”œâ”€â”€ data.py            Snapshot-first loading, return computation, splits
-â”œâ”€â”€ optimization.py    Markowitz, Black-Litterman, Ledoit-Wolf
-â”œâ”€â”€ backtesting.py     Walk-forward rebalancing
-â”œâ”€â”€ validation.py      Bootstrap, PSR, DSR, overfit diagnostics
-â”œâ”€â”€ analytics.py       Performance and risk metrics
-â””â”€â”€ visualization.py   Charts
+├── config.py          Parameters, centralised
+├── data.py            Snapshot-first loading, return computation, splits
+├── optimization.py    Markowitz, Black-Litterman, Ledoit-Wolf
+├── backtesting.py     Walk-forward rebalancing
+├── validation.py      Bootstrap, PSR, DSR, overfit diagnostics
+├── analytics.py       Performance and risk metrics
+└── visualization.py   Charts
 data_cache/            Frozen price snapshot
 ```
 
