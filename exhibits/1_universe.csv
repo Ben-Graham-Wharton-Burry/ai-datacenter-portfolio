@@ -1,0 +1,24 @@
+,Company,Cluster,Role in data centres,Listing,"Market cap
+end-2024","Return
+a year","Volatility
+a year"
+EQIX,Equinix,REIT,Colocation and interconnection,US,$91bn,+13%,24%
+DLR,Digital Realty Trust,REIT,Wholesale and colocation,US,$60bn,+12%,27%
+AMT,American Tower,REIT,Cell towers; edge data centres (CoreSite),US,$86bn,-2%,26%
+CCI,Crown Castle,REIT,Cell towers and fibre,US,$39bn,-5%,28%
+IRM,Iron Mountain,REIT,Records storage; data centres,US,$31bn,+36%,28%
+GDS,GDS Holdings,Asia,Data centres in China,"China, US ADS",$4.5bn,-17%,75%
+VNET,VNET Group,Asia,Data centres in China,"China, US ADS",$1.3bn,-21%,66%
+VRT,Vertiv,Infrastructure,Power and cooling equipment,US,$43bn,+60%,57%
+ANET,Arista Networks,Infrastructure,Data-centre network switching,US,$139bn,+58%,38%
+CSCO,Cisco Systems,Infrastructure,Networking equipment,US,$237bn,+12%,25%
+MRVL,Marvell Technology,Infrastructure,"Data-centre chips: custom silicon, optics",US,$96bn,+41%,46%
+SBGSY,Schneider Electric,Infrastructure,Electrical distribution and cooling,"France, US ADR",$140bn,+23%,29%
+ETN,Eaton,Infrastructure,Power management and distribution,US,$131bn,+33%,26%
+JCI,Johnson Controls,Infrastructure,Building systems and cooling,US,$52bn,+20%,31%
+HON,Honeywell,Infrastructure,Building automation and controls,US,$145bn,+9%,25%
+GNRC,Generac,Infrastructure,Backup generators,US,$9.2bn,+9%,56%
+CAT,Caterpillar,Infrastructure,Generator sets and power systems,US,$175bn,+28%,32%
+SPY,SPDR S&P 500 ETF,Benchmark,Benchmark: the US equity market,US,,+17%,18%
+DTCR,Global X Data Center ETF,Comparison,Comparison: data-centre thematic ETF,US,,+5%*,21%*
+SRVR,Pacer Data & Infra. ETF,Comparison,Comparison: data-centre REIT ETF,US,,+0%,20%
