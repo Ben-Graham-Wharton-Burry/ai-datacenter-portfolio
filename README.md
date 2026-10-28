@@ -1,106 +1,101 @@
-# AI Data Centre Infrastructure Portfolio
+# AI Data Centres: An Investment Thesis, Rebuilt
 
-Construction and out-of-sample validation of a thematic equity portfolio built around the physical infrastructure behind AI compute: the colocation REITs that house the racks, the firms that power and cool them, and the networking hardware that connects them.
+How should an investor hold the AI data-centre build-out? This project splits seventeen listed companies into three clusters (the REITs that own the buildings, two Chinese operators, and ten suppliers of power, cooling and networking equipment), builds portfolios from them with two methods, tests those portfolios on 21 months of data they never saw, and projects them ten years ahead.
 
-Two notebooks, deliberately separated.
+**[Read the full note (PDF, 30 pages)](AI_Data_Centres_Investment_Thesis.pdf)**
 
----
+Every number, table and chart in the note is produced by the code in this repository, from one data snapshot, in one run.
 
-## Why two notebooks
+## Our view
 
-`AI_DataCenter_Thesis_Analysis.ipynb` is the research. It builds the universe, decomposes returns into Fama-French factors, optimises portfolios under several objectives, applies Black-Litterman with thematic views, and projects forward by Monte Carlo. It produces encouraging numbers and it contains several biases.
+The thesis survives in a narrower form than the first version claimed. The theme was real and the infrastructure names delivered it. What the optimiser adds on top of a simple equal-weighted basket is small and, on the evidence available, cannot be distinguished from luck.
 
-`unified_analysis.ipynb` is the validation. It re-runs the core under a temporal train/test split with an embargo, walk-forward estimation, transaction costs, and formal corrections for the fact that more than one strategy was tried.
-
-Research and validation have different incentives, and running them in one file invites the researcher to adjust the model until the validation passes. Separating them gives the validation a fixed target. **The two notebooks disagree, and that disagreement is the most informative output of the project.**
-
-## What is implemented
-
-**Portfolio construction.** Markowitz tangency and global minimum variance, solved with SLSQP from multiple random starting points because the Sharpe objective is not concave under the budget and bound constraints. Ledoit-Wolf covariance shrinkage. A 15% position cap. Black-Litterman with four thematic views. Effective N reported alongside every weight vector, because a weight vector that looks diversified frequently is not.
-
-**Validation.** Temporal split (2019 to 2022 train, one-month embargo, 2023 to 2026 test), walk-forward expanding-window estimation, 15 bps round-trip costs, and Sharpe decay as the headline diagnostic.
-
-**Significance.** Circular block bootstrap with 10,000 replications and six-month blocks, Probabilistic Sharpe Ratio, Deflated Sharpe Ratio, Harvey-Liu haircut, and a paired block bootstrap against the benchmark.
-
-**Risk.** Historical and parametric VaR and CVaR, marginal contribution to risk via Euler decomposition, and empirical lower tail dependence through the probability integral transform.
-
-## Results
-
-Test period February 2023 to February 2026, net of 15 bps round-trip costs, universe selected on training data only.
-
-| Measure | Result |
+| Key numbers | |
 |---|---|
-| Sharpe ratio | 1.30, bootstrap 95% CI [0.24, 2.74] |
-| Probabilistic Sharpe Ratio | 0.97 |
-| Deflated Sharpe Ratio, N = 4 | 0.85, not significant |
-| Difference against SPY | 0.25, p = 0.50 |
-| Equal weight Sharpe ratio | 1.44, against 1.51 for the best optimised variant |
+| $100 in the infrastructure suppliers, Mar 2020 to Sep 2026 | $750, against $283 in the S&P 500 |
+| Black-Litterman portfolio, 15% position cap | 13 names, effective number of positions 10.1 |
+| $500,000 out of sample, Jan 2025 to Sep 2026 | $778k Black-Litterman, $763k equal weight, $663k S&P 500 |
+| Out-of-sample Sharpe ratio, 95% interval | Black-Litterman 0.93 (−0.57 to 2.44), S&P 500 1.04 |
+| Volatility, forecast against realised | Black-Litterman 22% vs 26.5%; historical mean 25% vs 40% |
+| Ten years ahead on Black-Litterman views, today's money | Median $822k from $500k; 15% chance of a nominal loss |
 
-The theme did well over this window, an equal-weighted holding would have captured nearly all of it, and nothing here establishes that the optimisation layer contributed skill. The training-period out-of-sample Sharpe ratio was -0.62, so performance *improved* out of sample, which reflects the 2022 rate shock against the 2023 to 2025 AI rally far more than anything about the strategy. A single split cannot separate the two.
+![Growth of $100 in each cluster](exhibits/2_cluster_growth.png)
 
-### Research notebook, in sample
+## What the analysis found
 
-In the research notebook's walk-forward, equal weighting had the highest Sharpe ratio (1.64, against 1.61 for maximum Sharpe) and less than half the drawdown (-15% against -34%), with no transaction costs and with the universe-selection bias working in the optimiser's favour. Within-cluster optimisation collapsed three of four clusters to a single name.
+* **The suppliers carried the theme.** Infrastructure returned 36% a year from March 2020 to September 2026, the REITs 9% and the S&P 500 17%. The Chinese operators lost about half their value.
+* **Optimising on historical returns looks best on the data it was fitted to.** It concentrates in the past winners (error maximisation, in Michaud's phrase). Black-Litterman, anchored to market capitalisation, holds a diversified portfolio with modest expectations.
+* **Out of sample, no method can be told apart from the market.** Every Sharpe ratio carries a 95% interval of about ±1.5 over 21 months. Black-Litterman ended level with an equally weighted portfolio of the same stocks.
+* **Risk is the forecast the data can test.** Black-Litterman's volatility forecast landed inside its interval. The historical-mean forecast understated realised volatility by more than a third.
+* **Ten years ahead, the expected-return assumption decides almost everything.** The same portfolio has a 0% or a 46% chance of losing money depending on that one input. Fat tails barely move the ten-year numbers.
 
-## Defects found in review
+![Which forecasts can 21 months test?](exhibits/12_oos_forecast_check.png)
 
-### Fixed, with a note at the site
+## Method in brief
 
-**Black-Litterman posterior covariance.** `Sigma_bl` was computed correctly, then passed through pandas `.cov()` before the optimiser, which computes the covariance between the columns of a covariance matrix. Both objects are square matrices of the right size, so nothing raised and the optimiser returned a plausible weight vector.
+| Step | Choice | Why |
+|---|---|---|
+| Windows | Estimate Mar 2020 to Dec 2024 (58 months), test Jan 2025 to Sep 2026 (21 months) | One window for every portfolio, and a test set the weights never saw |
+| Covariance | Ledoit-Wolf shrinkage to constant correlation (intensity 0.24) | 17 stocks on 58 months is a noisy sample matrix |
+| Expected returns | Historical mean against Black-Litterman with a market-cap prior and four views | The input that matters most and is estimated worst |
+| Optimisation | Long-only maximum Sharpe in convex form, 15% position cap | A single optimum, no dependence on starting values |
+| Out of sample | Design fixed in advance; benchmarks S&P 500, two thematic ETFs and 1/N | 1/N is the test of whether optimisation adds anything |
+| Inference | Lo (2002) intervals on Sharpe ratios; sampling intervals on realised return and volatility | Shows what 21 months can and cannot decide |
+| Simulation | Student-t marginals joined by a Student-t copula, 10,000 paths, common random numbers, four drift assumptions | Separates the effect of fat tails from the effect of the return assumption |
+| Robustness | Hierarchical clustering with linkage fixed in advance, scored by adjusted Rand index | Tests whether the business-line clusters exist in the returns |
 
-**PSR kurtosis convention.** The Bailey and Lopez de Prado standard error needs raw kurtosis (normal = 3); the code passed pandas' excess kurtosis (normal = 0), understating the standard error and overstating the PSR.
+The note also covers the risks to the thesis, including the hindsight in choosing the universe, which flatters every in-sample result.
 
-**DSR benchmark in the wrong units.** sigma_SR was fixed at 1 per month. The real standard error of a 37-month Sharpe estimate is about 0.17, so the expected maximum Sharpe under the null came out at 3.64 for four trials and the DSR was near zero for any strategy. I had first described this as an optimistic simplification. It was the opposite.
-
-**Sharpe decay with a negative denominator.** `1 - SR_test/SR_train` flips sign when the training Sharpe is negative, so a strategy that improved from -0.62 to 1.30 was printed as 308% decay with overfitting risk HIGH. Now reported as undefined.
-
-**The validation notebook had the same universe-selection leak as the research notebook.** It ranked names on full-sample Sharpe, including the test period. It now ranks on training data only.
-
-**Late listings.** DTCR lists in October 2020. In the research notebook a row-wise `dropna` silently moved the whole sample's start to late 2020, so it contains no part of the COVID crash; that is documented rather than changed. In the validation notebook the same series produced NaNs that crashed Ledoit-Wolf, which is why the notebook had never executed. Each rebalance now optimises over names with complete history in its window.
-
-**Unseeded optimiser restarts**, so results changed on every run. **A synthetic-price fallback** that silently replaced real data when the download failed; one copy of the research notebook was executed that way behind a proxy, with nothing in its text to say so. **Factor proxies generated from `np.random.normal`.** All three now either seed, raise, or are removed.
-
-### Documented, not removed
-
-**1. The walk-forward backtest is not out of sample.** Section 4.3 of the research notebook reduces the universe to 15 names by ranking on full-sample Sharpe ratio. Section 6 then runs the walk-forward on that pre-filtered universe. Parameter estimation is genuinely walk-forward; universe selection is not. This is the most consequential issue in the project and the reason the validation notebook exists.
-
-**2. Black-Litterman views are written as absolute returns, one of them below its own prior.** "Vertiv outperforms" is specified as 18% a year against an equilibrium prior of 21.8%, so the bullish view lowers Vertiv's posterior. Only the relative Equinix-against-GDS view behaves as its label says. The prior is also equal-weighted rather than market-cap weighted, which removes the equilibrium argument for the model.
-
-**3. The deflated Sharpe trial count is far too low.** N is set to 4, counting the optimisation variants compared at the end. The honest count includes every choice made along the way: lookback length, rebalancing frequency, weight cap, universe size, shrinkage method, embargo length, block size. Those choices are nested rather than independent, so specifications multiply across layers rather than adding, and the effective search space runs into the thousands. The reported deflation is a lower bound.
-
-The Monte Carlo section carries its own warning. Fifteen-year projections built on seven years of history containing no sustained bear market in the theme, with expected returns taken from a sample that includes the steepest part of an adoption curve, should be read as an illustration of dispersion rather than as a forecast.
-
-## Structure
-
-```
-AI_DataCenter_Thesis_Analysis.ipynb   Research: factors, optimisation, BL, Monte Carlo
-unified_analysis.ipynb                Validation: split, walk-forward, deflation
-src/
-├── config.py          Parameters, centralised
-├── data.py            Snapshot-first loading, return computation, splits
-├── optimization.py    Markowitz, Black-Litterman, Ledoit-Wolf
-├── backtesting.py     Walk-forward rebalancing
-├── validation.py      Bootstrap, PSR, DSR, overfit diagnostics
-├── analytics.py       Performance and risk metrics
-└── visualization.py   Charts
-data_cache/            Frozen price snapshot
-```
-
-## Running it
+## Reproducing the results
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook unified_analysis.ipynb
+
+python scripts/refresh_data.py       # downloads a snapshot into data_cache/
+python scripts/build_exhibits.py     # rebuilds every exhibit and CSV in exhibits/
+python -m pytest -q                  # 35 tests
+
+# Optional: typeset the PDF
+python -m playwright install chromium
+python scripts/render_pdf.py
 ```
 
-## References
+Prices come from Yahoo Finance, the risk-free rate from the Kenneth French data library and inflation from FRED. **No market data is redistributed in this repository**: `refresh_data.py` downloads your own copy. If a download is blocked (corporate networks often block the French library), the script saves a diagnostic file and reads manually downloaded copies from `data_cache/manual/` instead. Without a snapshot the four data tests skip and the rest run.
 
-Black and Litterman (1992). He and Litterman (1999). Ledoit and Wolf (2004). DeMiguel, Garlappi and Uppal (2009). Bailey and Lopez de Prado (2012, 2014). Harvey and Liu (2015). Politis and Romano (1992). Artzner et al. (1999).
+The note uses a snapshot taken on 26 October 2026, with complete months to 30 September 2026. Two builds from the same snapshot produce byte-identical CSVs. A later snapshot will give slightly different numbers, because the providers revise their histories.
+
+## Repository layout
+
+```
+AI_Data_Centres_Investment_Thesis.pdf   the note
+docs/manuscript.md                      its text; render_pdf.py typesets it with the exhibits
+exhibits/                               every exhibit as PNG and vector PDF, with CSVs of the numbers
+scripts/
+  refresh_data.py                       data snapshot: prices, factors, CPI, market caps
+  build_exhibits.py                     the whole analysis, in report order
+  render_pdf.py                         markdown to PDF
+src/
+  config.py                             universe, clusters, windows, views
+  dataset.py                            loading and cleaning, including the Vertiv SPAC fix
+  estimators.py                         sample, Ledoit-Wolf, Black-Litterman
+  optimiser.py                          convex maximum Sharpe with a position cap
+  engine.py                             daily backtest with annual rebalancing and costs
+  metrics.py                            performance table and Sharpe intervals
+  correlation.py                        hierarchical clustering and agreement tests
+  montecarlo.py                         t-copula simulation
+  market_caps.py                        market caps from share counts, with ADR handling
+  exhibits.py, house_style.py           charts and tables
+tests/                                  unit tests, including hand-checked Sharpe intervals
+```
+
+## Version history
+
+The first version (tag `v1`) took its optimisations, charts and simulations from Portfolio Visualizer, scored portfolios on the data they were fitted to, mixed estimation windows of different lengths, and reported a 38% expected return with a 0% chance of loss. This version replaces all of it with our own code. Appendix D of the note lists the changes.
 
 ## Related
 
-[Backtesting engine](https://github.com/Ben-Graham-Wharton-Burry/backtesting-engine) simulates the resulting weights day by day under realistic execution.
+[Backtesting engine](https://github.com/Ben-Graham-Wharton-Burry/backtesting-engine): an event-driven backtester with pluggable strategies, transaction costs and an audit trail.
 
-## Author
+---
 
-High_Magus_of_Risk.
+High_Magus_of_Risk. A personal research project, not investment advice.
